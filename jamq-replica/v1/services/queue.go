@@ -4,22 +4,37 @@ import (
 	"errors"
 	"jamq-replica/constants"
 	"jamq-replica/v1/exceptions"
+
+	"golang.org/x/tools/go/analysis/passes/nilfunc"
 )
+
+/*
+   The queue is implemented in the form of a doubly linked list
+   This way we can easily consume from the front and
+   insert into the back using 2 pointers.
+*/
+
+type Pair struct {
+	First  interface{}
+	Second interface{}
+}
 
 type FifoNode struct {
 	Message   string
 	MessageId string
 	Next      *FifoNode
+	Prev      *FifoNode
 }
 
 type queue interface {
-	createQueue(string)
-	sendMessage(string, string)
-	consumeMessage(string) string
-	purgeQueue(string)
+	CreateQueue(string) error
+	SendMessage(string, string) error
+	ConsumeMessage(string) (*FifoNode, error)
+	PurgeQueue(string) error
+	DoesQueueExist(string) bool
 }
 
-var fifos map[string]*FifoNode = make(map[string]*FifoNode)
+var fifos map[string]*Pair = make(map[string]*Pair)
 
 var fifosCounts map[string]int = make(map[string]int)
 
@@ -42,19 +57,69 @@ func (qf *queueFactory) GetInstance(queueType string) (interface{}, error) {
 	}
 }
 
-func (fq *fifoQueue) createQueue(queueName string) error {
+func (fq *fifoQueue) DoesQueueExist(queueName string) bool {
 	if _, exists := fifosCounts[queueName]; exists {
+		return true
+	}
+	return false
+}
+
+func (fq *fifoQueue) CreateQueue(queueName string) error {
+	if fq.DoesQueueExist(queueName) {
 		return new(exceptions.QueueAlreadyExistsError)
 	}
 	fifosCounts[queueName] = 0
 	return nil
 }
 
-func (fq *fifoQueue) sendMessage(queueName string, message string) {
+func (fq *fifoQueue) SendMessage(queueName string, message string, messageId string) error {
+	if !fq.DoesQueueExist(queueName) {
+		return new(exceptions.QueueNotFoundError)
+	}
+	/*
+	   doubly linked list insertion if nothing was previously present or if queue was empty.
+	*/
+	if fifos[queueName] == nil || fifos[queueName].First == nil {
+		newNode := &FifoNode{Message: message, MessageId: messageId, Next: nil, Prev: nil}
+		if fifos[queueName] == nil {
+			fifos[queueName] = &Pair{First: newNode, Second: newNode}
+		} else {
+			fifos[queueName].First = newNode
+			fifos[queueName].Second = newNode
+		}
+		fifosCounts[queueName]++
+		return nil
+	}
+	/*
+	   doubly linked list insertion at the end
+	*/
+	pointers := fifos[queueName]
+	newNode := &FifoNode{Message: message, MessageId: messageId, Next: nil, Prev: pointers.Second.(*FifoNode)}
+	pointers.Second.(*FifoNode).Next = newNode
+	pointers.Second = newNode
+	fifosCounts[queueName]++
+	return nil
 }
 
-func (fq *fifoQueue) consumeMessage(queueName string, message string) {
+func (fq *fifoQueue) ConsumeMessage(queueName string) (*FifoNode, error) {
+	if fifos[queueName] == nil || fifos[queueName].First == nil {
+		return nil, new(exceptions.QueueEmptyError)
+	}
+	currentNode := fifos[queueName].First.(*FifoNode)
+	fifos[queueName].First = currentNode.Next
+	if currentNode.Next == nil {
+		fifos[queueName].Second = nil
+	}
+	currentNode.Next.Prev = nil
+	fifosCounts[queueName]--
+	return currentNode, nil
 }
 
-func (fq *fifoQueue) purgeQueue(queueName string) {
+func (fq *fifoQueue) PurgeQueue(queueName string) error {
+	if fifos[queueName] == nil {
+		return new(exceptions.QueueNotFoundError)
+	}
+	fifos[queueName].First = nil
+	fifos[queueName].Second = nil
+	return nil
 }
