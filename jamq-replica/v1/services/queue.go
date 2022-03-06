@@ -4,8 +4,6 @@ import (
 	"errors"
 	"jamq-replica/constants"
 	"jamq-replica/v1/exceptions"
-
-	"golang.org/x/tools/go/analysis/passes/nilfunc"
 )
 
 /*
