@@ -6,7 +6,7 @@ type SendMessageResponse struct {
 
 type ConsumeMessageResponse struct {
 	Message   string `json:"message"`
-	MessageId string `json:"message_id"`
+	Timestamp int    `json:"timestamp"`
 }
 
 type CreateQueueResponse struct {

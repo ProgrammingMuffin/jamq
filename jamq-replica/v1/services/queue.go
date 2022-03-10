@@ -19,14 +19,14 @@ type Pair struct {
 
 type FifoNode struct {
 	Message   string
-	MessageId string
+	Timestamp int
 	Next      *FifoNode
 	Prev      *FifoNode
 }
 
-type queue interface {
+type Queue interface {
 	CreateQueue(string) error
-	SendMessage(string, string) error
+	SendMessage(string, string, int) error
 	ConsumeMessage(string) (*FifoNode, error)
 	PurgeQueue(string) error
 	DoesQueueExist(string) bool
@@ -70,7 +70,7 @@ func (fq *fifoQueue) CreateQueue(queueName string) error {
 	return nil
 }
 
-func (fq *fifoQueue) SendMessage(queueName string, message string, messageId string) error {
+func (fq *fifoQueue) SendMessage(queueName string, message string, timestamp int) error {
 	if !fq.DoesQueueExist(queueName) {
 		return new(exceptions.QueueNotFoundError)
 	}
@@ -78,7 +78,7 @@ func (fq *fifoQueue) SendMessage(queueName string, message string, messageId str
 	   doubly linked list insertion if nothing was previously present or if queue was empty.
 	*/
 	if fifos[queueName] == nil || fifos[queueName].First == nil {
-		newNode := &FifoNode{Message: message, MessageId: messageId, Next: nil, Prev: nil}
+		newNode := &FifoNode{Message: message, Timestamp: timestamp, Next: nil, Prev: nil}
 		if fifos[queueName] == nil {
 			fifos[queueName] = &Pair{First: newNode, Second: newNode}
 		} else {
@@ -92,7 +92,7 @@ func (fq *fifoQueue) SendMessage(queueName string, message string, messageId str
 	   doubly linked list insertion at the end
 	*/
 	pointers := fifos[queueName]
-	newNode := &FifoNode{Message: message, MessageId: messageId, Next: nil, Prev: pointers.Second.(*FifoNode)}
+	newNode := &FifoNode{Message: message, Timestamp: timestamp, Next: nil, Prev: pointers.Second.(*FifoNode)}
 	pointers.Second.(*FifoNode).Next = newNode
 	pointers.Second = newNode
 	fifosCounts[queueName]++
