@@ -1,7 +1,6 @@
 package dtos
 
 type CommonQueueRequestData struct {
-	QueueName string `json:"queue_name"`
 	QueueType string `json:"queue_type"`
 }
 

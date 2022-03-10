@@ -15,7 +15,7 @@ func HandleCreateQueue(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(400, err.Error())
 	}
-	err = queueService.(services.Queue).CreateQueue(request.QueueName)
+	err = queueService.(services.Queue).CreateQueue(c.Param("queueName"))
 	if err != nil {
 		return echo.NewHTTPError(400, err.Error())
 	}
@@ -29,7 +29,7 @@ func HandlePurgeQueue(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(400, err.Error())
 	}
-	err = queueService.PurgeQueue(request.QueueName)
+	err = queueService.PurgeQueue(c.Param("queueName"))
 	if err != nil {
 		return echo.NewHTTPError(400, err.Error())
 	}
@@ -43,7 +43,7 @@ func HandleSendMessage(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(400, err.Error())
 	}
-	err = queueService.SendMessage(request.QueueName, request.Message, request.Timestamp)
+	err = queueService.SendMessage(c.Param("queueName"), request.Message, request.Timestamp)
 	if err != nil {
 		return echo.NewHTTPError(400, err.Error())
 	}
@@ -58,7 +58,7 @@ func HandleConsumeMessage(c echo.Context) error {
 		return echo.NewHTTPError(400, err.Error())
 	}
 
-	node, err := queueService.ConsumeMessage(request.QueueName)
+	node, err := queueService.ConsumeMessage(c.Param("queueName"))
 	if err != nil {
 		return echo.NewHTTPError(400, err.Error())
 	}
