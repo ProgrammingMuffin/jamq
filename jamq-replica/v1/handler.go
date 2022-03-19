@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"jamq-replica/utils"
 	"jamq-replica/v1/dtos"
 	"jamq-replica/v1/services"
@@ -10,8 +11,8 @@ import (
 )
 
 func HandleCreateQueue(c echo.Context) error {
-	request := &dtos.CreateQueueRequest{}
-	queueService, err := utils.GetQueueServiceFromRequest(c, request)
+	fmt.Println("handle create queue")
+	queueService, err := utils.GetQueueServiceFromRequest(c)
 	if err != nil {
 		return echo.NewHTTPError(400, err.Error())
 	}
@@ -24,8 +25,7 @@ func HandleCreateQueue(c echo.Context) error {
 }
 
 func HandlePurgeQueue(c echo.Context) error {
-	request := &dtos.PurgeQueueRequest{}
-	queueService, err := utils.GetQueueServiceFromRequest(c, request)
+	queueService, err := utils.GetQueueServiceFromRequest(c)
 	if err != nil {
 		return echo.NewHTTPError(400, err.Error())
 	}
@@ -39,7 +39,7 @@ func HandlePurgeQueue(c echo.Context) error {
 
 func HandleSendMessage(c echo.Context) error {
 	request := &dtos.SendMessageRequest{}
-	queueService, err := utils.GetQueueServiceFromRequest(c, request)
+	queueService, err := utils.GetQueueServiceFromRequest(c)
 	if err != nil {
 		return echo.NewHTTPError(400, err.Error())
 	}
@@ -52,8 +52,7 @@ func HandleSendMessage(c echo.Context) error {
 }
 
 func HandleConsumeMessage(c echo.Context) error {
-	request := &dtos.ReceiveMessageRequest{}
-	queueService, err := utils.GetQueueServiceFromRequest(c, request)
+	queueService, err := utils.GetQueueServiceFromRequest(c)
 	if err != nil {
 		return echo.NewHTTPError(400, err.Error())
 	}
