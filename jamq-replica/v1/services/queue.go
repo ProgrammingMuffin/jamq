@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"jamq-replica/constants"
 	"jamq-replica/v1/exceptions"
 )
@@ -88,6 +89,12 @@ func (fq *fifoQueue) SendMessage(queueName string, message string, timestamp int
 		fifosCounts[queueName]++
 		return nil
 	}
+	if fifos[queueName].First == nil {
+		fmt.Println("First is null")
+	}
+	if fifos[queueName].Second == nil {
+		fmt.Println("Second is null")
+	}
 	/*
 	   doubly linked list insertion at the end
 	*/
@@ -104,12 +111,14 @@ func (fq *fifoQueue) ConsumeMessage(queueName string) (*FifoNode, error) {
 		return nil, new(exceptions.QueueEmptyError)
 	}
 	currentNode := fifos[queueName].First.(*FifoNode)
-	fifos[queueName].First = currentNode.Next
 	if currentNode.Next == nil {
+		fifos[queueName].First = nil
 		fifos[queueName].Second = nil
+	} else {
+		fifos[queueName].First = currentNode.Next
+		currentNode.Next.Prev = nil
+		fifosCounts[queueName]--
 	}
-	currentNode.Next.Prev = nil
-	fifosCounts[queueName]--
 	return currentNode, nil
 }
 
