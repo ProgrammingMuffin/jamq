@@ -1,0 +1,22 @@
+The disableGPU setting is set to undefined
+Not disabling GPU
+Main~createDefaultWorkingDir - Default working dir creation already attempted
+1647684937101 main info "Booting Postman 9.14.0, linux-5.13.0-35-generic on x64"
+1647684937103 main info "EventBus~initialize - Success"
+1647684937106 main info "Proxy configuration has not been setup"
+1647684937107 main info "CloudProxyManager~init - Success"
+1647684937121 main info "UpdateHandler~init - Success"
+1647684937515 main info "RuntimeIPCAgent~started: Success"
+1647684937518 main info "LinuxAutoUpdater~Cleanup - Initial cleanup successful"
+1647684937519 main info "LeaderSelection: Initialized successfully"
+1647684937520 main info "VersionDependencyService: Initialized successfully"
+1647684937551 main info "GPU detected VID 4318 DID 7308 ACTIVE true"
+1647684937551 main info "GPU detected VID 32902 DID 16027 ACTIVE false"
+1647684937562 main info "Bootstrap-models~bootstrap - Success"
+1647684939447 main info "UpdateHandler~app-update-events - Received event",{"name":"checkForElectronVersionUpdated","namespace":"appUpdate"}
+INTERCEPTOR CONNECTIVITY: Connecting to Interceptor Bridge
+InterceptorBridge: Trying to connect Native App IPC~Interceptor Bridge
+IPCClient ~ WindowHandler: New event is received { type: 'window-opened' }
+1647684939459 main info "windowManager: First requester booted successfully."
+1647684939459 main info "windowManager~restoreWindows: Restoring requester windows"
+1647684939460 main info "Main~AppEvents - Received booted event for process requester.Version undefined UI Version: undefined Desktop Platform Version: 9.14.0"

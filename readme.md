@@ -22,11 +22,11 @@ JAMQ (Just Another Message Queue) is a message queue similar to Amazon Web Servi
 
 JAMQ follows the source-replica architecture where a request goes to the source API server and the API server balances the load, and routes the traffic to the respective replica(s). A message replica map is maintained to know which replica is mapped to a message ID so that the operations can be directed towards that particular replica. There will also be a similar map maintained for the queue names that maps to replicas.
 
-![](Aspose.Words.00da3c9c-b48c-4a4e-b514-e3167c5e65c6.001.jpeg)
+![](readme/Aspose.Words.00da3c9c-b48c-4a4e-b514-e3167c5e65c6.001.jpeg)
 
 Figure 1
 
-![](Aspose.Words.00da3c9c-b48c-4a4e-b514-e3167c5e65c6.002.png)
+![](readme/Aspose.Words.00da3c9c-b48c-4a4e-b514-e3167c5e65c6.002.png)
 
 Figure 2
 
@@ -38,7 +38,7 @@ As far as the message replica map is concerned, this can be stored in memory wit
 
 Please note that the LLDs are written only in the perspective of service layers and not controllers. This doesn’t mean that the controller’s don’t exist. They do. But it’s more important to understand the service layer.
 
-![](Aspose.Words.00da3c9c-b48c-4a4e-b514-e3167c5e65c6.003.jpeg)
+![](readme/Aspose.Words.00da3c9c-b48c-4a4e-b514-e3167c5e65c6.003.jpeg)
 
 Here, there are two maps for each type of queue. They store a particular queue’s head address and tail address respectively. The head is required to consume the message and the tail is required to push the message. The data structure used for the queue will be a linked list because it is effective in freeing unused memory (Go has a garbage collector) and dynamically increasing the size of the queue.
 
@@ -48,7 +48,7 @@ The Node class depicts the queue node object which can contain a message, a rand
 
 **Source Low Level Design (LLD)**
 
-![](Aspose.Words.00da3c9c-b48c-4a4e-b514-e3167c5e65c6.004.png)
+![](readme/Aspose.Words.00da3c9c-b48c-4a4e-b514-e3167c5e65c6.004.png)
 
 The Monitor class deals with monitoring the status of replicas. The updateReplicaMessageCounts() will be called every time a message is pushed to the replicas. UpdateReplicaMap() is another method that updates the replicaMap and assigns new queues to replicas.
 
