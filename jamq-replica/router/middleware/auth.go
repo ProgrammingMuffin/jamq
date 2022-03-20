@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"jamq-replica/constants"
+	"jamq-replica/globals"
 	"net/http"
 	"os"
 	"strconv"
@@ -14,15 +15,18 @@ import (
 	"crypto/sha256"
 
 	"github.com/labstack/echo/v4"
+	"github.com/valyala/bytebufferpool"
 )
 
 func Authenticate(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var bodyBytes []byte
+		bodyBytesBuffer := &bytebufferpool.ByteBuffer{}
 		request := c.Request()
 		header := request.Header
-		request.Body.Read(bodyBytes)
-		body := string(bodyBytes)
+		bodyBytesBuffer.ReadFrom(request.Body)
+		body := bodyBytesBuffer.String()
+		globals.Body = body
+		fmt.Println("Body is: " + body)
 		queryString := strings.ToValidUTF8(c.QueryString(), "")
 		nonce := header.Get(constants.GetHeaders().X_AUTH_NONCE)
 		sentTimestamp, err := strconv.Atoi(nonce)

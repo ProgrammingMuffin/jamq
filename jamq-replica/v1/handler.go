@@ -43,6 +43,10 @@ func HandleSendMessage(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(400, err.Error())
 	}
+	err = utils.GetRequestBody(request)
+	if err != nil {
+		return echo.NewHTTPError(400, err.Error())
+	}
 	err = queueService.SendMessage(c.Param("queueName"), request.Message, request.Timestamp)
 	if err != nil {
 		return echo.NewHTTPError(400, err.Error())
